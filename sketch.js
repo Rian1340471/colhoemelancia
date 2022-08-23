@@ -15,8 +15,9 @@ var fruit,rope;
 var link;
 var bunny;
 var bunnyImg, fruitImg, bgImg;
-var button;
+var button, soundButton;
 var bunnyAnimation, eatAnimation, sadAnimation;
+var eatSound, sadSound,backgroundSound, cutSound, airSound;
 
 function preload()
 {
@@ -31,7 +32,18 @@ function preload()
   bunnyAnimation.playing = true;
   bunnyAnimation.looping = true;
 
+  eatAnimation.playing = true;
+  eatAnimation.looping = false;
 
+  sadAnimation.playing = true;
+  sadAnimation.looping = false;
+
+  //carregando os sons
+  eatSound = loadSound('assets/eating_sound.mp3');
+  sadSound = loadSound('assets/sad.wav');
+  backgroundSound = loadSound('assets/sound1.mp3');
+  cutSound = loadSound('assets/rope_cut.mp3');
+  airSound = loadSound('assets/air.wav');
 }
 
 
@@ -74,6 +86,8 @@ function setup()
 
   //trabalhando com os frames
   bunnyAnimation.frameDelay = 20;
+  eatAnimation.frameDelay = 20;
+  sadAnimation.frameDelay = 20;
   //adicionando a animação
   coelho.addAnimation('piscando', bunnyAnimation);
   coelho.addAnimation('comendo', eatAnimation);
@@ -85,6 +99,11 @@ function setup()
   button.size(50,50);
   button.mouseClicked(drop);
 
+  //botão para cortar a corda
+  soundButton = createImg('assets/mute.png');
+  soundButton .position(450,30);
+  soundButton .size(50,50);
+  soundButton .mouseClicked(mute);
 
   //configuração de texto e desenho
   imageMode(CENTER);
@@ -141,5 +160,14 @@ function collide(body,sprite){
     else{
       return false;
     }
+  }
+}
+
+function mute(){
+  if(backgroundSound.isPlaying()){
+    backgroundSound.stop();
+  }
+  else{
+    backgroundSound.play();
   }
 }
