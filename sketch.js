@@ -15,7 +15,7 @@ var fruit,rope;
 var link;
 var bunny;
 var bunnyImg, fruitImg, bgImg;
-var button, soundButton;
+var button, soundButton,airButton;
 var bunnyAnimation, eatAnimation, sadAnimation;
 var eatSound, sadSound,backgroundSound, cutSound, airSound;
 
@@ -99,12 +99,17 @@ function setup()
   button.size(50,50);
   button.mouseClicked(drop);
 
-  //botão para cortar a corda
+  //botão para parar/voltar o som
   soundButton = createImg('assets/mute.png');
   soundButton .position(450,30);
   soundButton .size(50,50);
   soundButton .mouseClicked(mute);
 
+  //botão para soprar a melancia
+  airButton = createImg('assets/balloon.png');
+  airButton .position(50,160);
+  airButton .size(100,80);
+  airButton .mouseClicked(wind);
   //configuração de texto e desenho
   imageMode(CENTER);
   rectMode(CENTER);
@@ -133,9 +138,18 @@ function draw()
   if(fruit != null){
   image(fruitImg, fruit.position.x, fruit.position.y, 60, 60);
   }
+  //detecção de colisão com o chão
+    if(fruit != null && fruit.position.y>=680){
+      sadSound.play();
+       coelho.changeAnimation("triste");
+      fruit=null
+    }
+    
+
   //detecção de colisão da fruta
   if(collide(fruit,coelho) === true){
     coelho.changeAnimation('comendo');
+    eatSound.play()
   }
   //desenhar os sprites
   drawSprites();
@@ -147,6 +161,7 @@ function drop(){
   rope.break();
   link.dettach();
   link = null;
+  cutSound.play()
 }
 
 function collide(body,sprite){
@@ -171,3 +186,20 @@ function mute(){
     backgroundSound.play();
   }
 }
+
+function wind(){
+
+  Matter.Body.applyForce(fruit,{
+    x:0,y:0},{  x:1,y:0 
+  })
+  airSound.play()
+}
+
+
+
+
+
+
+
+
+
