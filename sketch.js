@@ -11,13 +11,14 @@ const Composite = Matter.Composite;
 let engine;
 let world;
 var ground;
-var fruit,rope;
-var link;
+var fruit,rope, rope2, rope3;
+var link, link2, link3;
 var bunny;
 var bunnyImg, fruitImg, bgImg;
-var button, soundButton,airButton;
+var button, button2, button3, soundButton,airButton;
 var bunnyAnimation, eatAnimation, sadAnimation;
 var eatSound, sadSound,backgroundSound, cutSound, airSound;
+var canW, canH;
 
 function preload()
 {
@@ -50,8 +51,19 @@ function preload()
 function setup() 
 {
   //criação da tela
-  createCanvas(500,700);
- 
+  //createCanvas(500,700);
+  var isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+  if(isMobile){
+    canW = displayWidth;
+    canH = displayHeight;
+    createCanvas(canW,canH);
+  }
+  else{
+    canW = windowWidth;
+    canH = windowHeight;
+    createCanvas(canW,canH);
+  }
+
   //taxa de frames
   frameRate(80);
   //mecanismo de física
@@ -60,15 +72,16 @@ function setup()
   world = engine.world;
 
   //criação de solo
-  ground = new Ground(200,690,600,20);
+  ground = new Ground(250,canH-50,500,20);
 
   //criar a corda
   rope = new Rope(5,{x:250,y:20});
+  rope2 = new Rope(5,{x:70,y:110});
 
   //criar a fruta
 
   var fruit_options = {
-    density: 0.001
+    restitution: 0.5
   }
 
   fruit = Bodies.circle(300,200,15,fruit_options);
@@ -78,9 +91,10 @@ function setup()
 
   //criar o link entre a fruta e a corda
   link = new Link(rope,fruit);
+  link2 = new Link(rope2,fruit);
   
   //criar o coelho
-  coelho = createSprite(250,600,50,80);
+  coelho = createSprite(250,canH-150,50,80);
   //coelho.addImage("coelho",bunnyImg);
   coelho.scale = 0.3;
 
@@ -98,6 +112,12 @@ function setup()
   button.position(220,30);
   button.size(50,50);
   button.mouseClicked(drop);
+
+  //botão para cortar a corda
+  button2 = createImg('assets/cut_btn.png');
+  button2.position(50,100);
+  button2.size(50,50);
+  button2.mouseClicked(drop2);
 
   //botão para parar/voltar o som
   soundButton = createImg('assets/mute.png');
@@ -123,25 +143,26 @@ function draw()
   background(0); //0 preto e 256 é branco
 
   //imagem de fundo
-  image(bgImg,width/2,height/2,width,height);
+  image(bgImg,canW/2,canH/2,canW,canH);
   
   //atualização do mecanismo de física
   Engine.update(engine);
 
   //mostrar o solo
-  ground.show();
+  //ground.show();
 
   //mostrar a corda
   rope.show();
+  rope2.show();
 
   //mostrar a fruta
   if(fruit != null){
   image(fruitImg, fruit.position.x, fruit.position.y, 60, 60);
   }
   //detecção de colisão com o chão
-    if(fruit != null && fruit.position.y>=680){
+    if(fruit != null && fruit.position.y>=canH-100){
       sadSound.play();
-       coelho.changeAnimation("triste");
+      coelho.changeAnimation("triste");
       fruit=null
     }
     
@@ -161,7 +182,14 @@ function drop(){
   rope.break();
   link.dettach();
   link = null;
-  cutSound.play()
+  cutSound.play();
+}
+
+function drop2(){
+  rope2.break();
+  link2.dettach();
+  link2 = null;
+  cutSound.play();
 }
 
 function collide(body,sprite){
@@ -190,9 +218,9 @@ function mute(){
 function wind(){
 
   Matter.Body.applyForce(fruit,{
-    x:0,y:0},{  x:1,y:0 
+    x:0,y:0},{  x:0.01,y:0 
   })
-  airSound.play()
+  airSound.play();
 }
 
 
